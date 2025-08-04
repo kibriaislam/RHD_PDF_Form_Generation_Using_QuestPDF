@@ -1,0 +1,6 @@
+@RHD_Testing_HostAddress = http://localhost:5113
+
+GET {{RHD_Testing_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

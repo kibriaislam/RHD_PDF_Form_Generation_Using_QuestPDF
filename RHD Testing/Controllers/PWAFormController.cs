@@ -100,6 +100,26 @@ namespace RHD_Testing.Controllers
                 DatedSignature = "Signed 12/02/2025",
                 ModeOfPayment = "Cheque No. 654321 dated 12/02/2025",
                 PaidBy = "Project Manager"
+            },
+                      new WorkItem
+            {
+                ContractorName = "Prime Transport Co.",
+                WorkDescription = "Transportation of construction materials",
+                BookNo = "MB-004",
+                PageNo = "52",
+                Date = new DateTime(2025, 2, 5),
+                WrittenOrderReference = "WO-2025-004 dated 03/02/2025",
+                ActualCompletion = "Service completed on 10/02/2025",
+                Quantity = "25",
+                Rate = "3,200.00",
+                Unit = "Trips",
+                Amount = "80,000.00",
+                InFigure = "80,000.00",
+                InWords = "Eighty Thousand Taka Only",
+                PayeesAcknowledgement = "Received by Rafiq Ahmed on 12/02/2025",
+                DatedSignature = "Signed 12/02/2025",
+                ModeOfPayment = "Cheque No. 654321 dated 12/02/2025",
+                PaidBy = "Project Manager"
             }
         }
             };

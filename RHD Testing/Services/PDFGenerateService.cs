@@ -68,7 +68,7 @@ namespace RHD_Testing.Services
                         column.Item().PaddingTop(2).Text("* In the case of payments to suppliers ...").FontSize(6);
                     });
 
-                    page.Content().Table(table =>
+                    page.Content().PaddingTop(5).Table(table =>
                     {
                         // Optimized column proportions for landscape
                         table.ColumnsDefinition(columns =>
@@ -159,33 +159,29 @@ namespace RHD_Testing.Services
                                 {
                                     var item = data.WorkItems[i];
 
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.ContractorName ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.WorkDescription ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.BookNo ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.PageNo ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.Date != DateTime.MinValue ? item.Date.ToString("dd/MM/yy") : "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.WrittenOrderReference ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.ActualCompletion ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.Quantity ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.Rate ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.Unit ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.Amount ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.InFigure ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.InWords ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.PayeesAcknowledgement ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.DatedSignature ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.ModeOfPayment ?? "").FontSize(6);
-                                    table.Cell().Border(1).Padding(1).Height(20).Text(item.PaidBy ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.ContractorName ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.WorkDescription ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.BookNo ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.PageNo ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.Date != DateTime.MinValue ? item.Date.ToString("dd/MM/yy") : "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.WrittenOrderReference ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.ActualCompletion ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.Quantity ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.Rate ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.Unit ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.Amount ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.InFigure ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.InWords ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.PayeesAcknowledgement ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.DatedSignature ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.ModeOfPayment ?? "").FontSize(6);
+                                    table.Cell().Border(1).Padding(1).Height(25).Text(item.PaidBy ?? "").FontSize(6);
                                 }
 
-                                // Add page break after each page except the last one
+                                // Force page break after each set of 4 rows (except last page)
                                 if (pageIndex < totalPages - 1)
                                 {
-                                    // Fill remaining columns for page break
-                                    for (int col = 0; col < 17; col++)
-                                    {
-                                        table.Cell().PageBreak();
-                                    }
+                                    table.Cell().ColumnSpan(17).PageBreak();
                                 }
                             }
 

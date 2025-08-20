@@ -153,6 +153,46 @@ namespace RHD_Testing.Controllers
             return File(pdfBytes, "application/pdf", "PurchaseAccount.pdf");
         }
 
+        [HttpGet("generate-form")]
+        public IActionResult GenerateSecurityDepositForm()
+        {
+            try
+            {
+                // Create dummy data matching the reference document
+                var formData = new SecurityDepositFormData
+                {
+                    ContractorName = "Brothers Ltd",
+                    WorkName = "Supply & Repairing worker and Supply & Repairing works and related service for Dhaka Mira B610014 Control Division Dhaka during the FY 2023-2024",
+                    MemoNumber = "4584",
+                    MemoDate = "27-11-2023",
+                    ContractNumber = "116/EE/ECDDHA/2023-24",
+                    ContractId = "871919",
+                    WorkStartDate = "27-11-2023",
+                    CompletionMemoNumber = "4584",
+                    DepositAmount = "15,845568",
+                    CashBookNumber = "458",
+                    CashBookDate = "27-11-2023",
+                    SecurityDepositAmount = "15,845568",
+                    IsTimeExtended = "না",
+                    AdditionalMaterials = "না",
+                    MaterialValueDeduction = "না",
+                    SubAssistantComment = "জামানতের টাকা ফেরত প্রদানের জন্য সুপারিশ সহ পেশ করা হইল।",
+                    SubDivisionalComment = "জামানতের টাকা ফেরত প্রদানের নিমিত্ত সুপারিশ সহকারে প্রেরণ করা হইল।",
+                    DivisionalAccountantComment = "নিরীক্ষিত।"
+                };
+
+                // Generate PDF
+                byte[] pdfBytes =PDFGenerateService.GenerateSecurityDepositForm(formData);
+
+                // Return PDF file
+                return File(pdfBytes, "application/pdf", "Security_Deposit_Return_Form.pdf");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error generating PDF: {ex.Message}");
+            }
+        }
+
         [HttpGet("pdf")]
         public IActionResult GeneratePurchaseAccountPdf()
         {

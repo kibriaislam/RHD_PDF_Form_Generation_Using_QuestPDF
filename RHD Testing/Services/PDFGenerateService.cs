@@ -392,6 +392,173 @@ namespace RHD_Testing.Services
             }).GeneratePdf();
         }
 
+        public static byte[] GenerateSecurityDepositForm(SecurityDepositFormData data)
+        {
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    // A4 Portrait size
+                    page.Size(PageSizes.A4);
+                    page.Margin(15);
+
+                    page.Header().Height(50).Column(column =>
+                    {
+                        // Main title
+                        column.Item().AlignCenter().Text("জামানতের টাকা ফেরত প্রদানের জন্য আবেদন")
+                            .FontSize(16).Bold();
+                    });
+
+                    page.Content().Column(content =>
+                    {
+                        // Form fields with exact spacing as reference
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("১. ঠিকাদারের নাম").FontSize(11);
+                            row.RelativeItem(3).Text(data.ContractorName ?? "").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("২. কাজের নাম").FontSize(11);
+                            row.RelativeItem(3).Text(data.WorkName ?? "").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("৩. কার্যাদেশের স্মারক নং ও তারিখ").FontSize(11);
+                            row.RelativeItem(3).Text($"{data.MemoNumber ?? ""} {data.MemoDate ?? ""}").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("৪. দরপত্র চুক্তি নং ও আইডি নং").FontSize(11);
+                            row.RelativeItem(3).Text($"{data.ContractNumber ?? ""} ID-{data.ContractId ?? ""}").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("৫. কাজ আরম্ভের তারিখ").FontSize(11);
+                            row.RelativeItem(3).Text(data.WorkStartDate ?? "").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("৬. কাজ সম্পাদনের তম/ বিলের স্মারক নং").FontSize(11);
+                            row.RelativeItem(3).Text(data.CompletionMemoNumber ?? "").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("৭. প্রদত্ত টাকার পরিমাণ").FontSize(11);
+                            row.RelativeItem(3).Text(data.DepositAmount ?? "").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("৮. ক্যাশ বহির ভাউচার নং ও তারিখ").FontSize(11);
+                            row.RelativeItem(3).Text($"{data.CashBookNumber ?? ""} {data.CashBookDate ?? ""}").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("৯. জামানতের টাকার পরিমাণ").FontSize(11);
+                            row.RelativeItem(3).Text(data.SecurityDepositAmount ?? "").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(5).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("১০. সময় বৃদ্ধি হয়েছে কি-না?").FontSize(11);
+                            row.RelativeItem(3).Text(data.IsTimeExtended ?? "না").FontSize(11);
+                        });
+
+                        // Field 11 with multi-line layout
+                        content.Item().PaddingTop(5).Column(col =>
+                        {
+                            col.Item().Row(row =>
+                            {
+                                row.RelativeItem(2).Text("১১. ঠিকাদার কোন অতিরিক্ত মালামাল").FontSize(11);
+                                row.RelativeItem(3).Text(data.AdditionalMaterials ?? "না").FontSize(11);
+                            });
+                            col.Item().Row(row =>
+                            {
+                                row.RelativeItem(2).Text("সরবরাহ করেছেন কি-না?").FontSize(11);
+                                row.RelativeItem(3).Text("").FontSize(11);
+                            });
+                            col.Item().PaddingLeft(40).Text("যদি থেকে থাকে তবে উক্ত বিভাগ কি ব্যবস্থা গ্রহণ করিয়াছেন").FontSize(10);
+                        });
+
+                        content.Item().PaddingTop(5).Column(col =>
+                        {
+                            col.Item().Row(row =>
+                            {
+                                row.RelativeItem(2).Text("১২. অন্য খাতে প্রদত্ত মালামালের মূল্য দরপত্র").FontSize(11);
+                                row.RelativeItem(3).Text(data.MaterialValueDeduction ?? "না").FontSize(11);
+                            });
+                            col.Item().Row(row =>
+                            {
+                                row.RelativeItem(2).Text("গৃহীত কি-না?").FontSize(11);
+                                row.RelativeItem(3).Text("").FontSize(11);
+                            });
+                        });
+
+                        // Contractor name aligned to right
+                        content.Item().PaddingTop(20).AlignRight().Text(data.ContractorName ?? "").FontSize(11).Bold();
+
+                        // Field 13 - Sub-assistant engineer
+                        content.Item().PaddingTop(15).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("১৩. উপ-সহকারী প্রকৌশলীর মন্তব্য").FontSize(11);
+                            row.RelativeItem(3).Text(data.SubAssistantComment ?? "জামানতের টাকা ফেরত প্রদানের জন্য সুপারিশ সহ পেশ করা হইল।").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(8).AlignRight().Column(signatureCol =>
+                        {
+                            signatureCol.Item().Text("উপ-সহকারী প্রকৌশলী, সড়ক").FontSize(10);
+                            signatureCol.Item().Text("সরঞ্জাম নিয়ন্ত্রণ উপ-বিভাগ, ঢাকা।").FontSize(10);
+                        });
+
+                        // Field 14 - Sub-divisional engineer
+                        content.Item().PaddingTop(15).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("১৪. উপ-বিভাগীয় প্রকৌশলীর মন্তব্য").FontSize(11);
+                            row.RelativeItem(3).Text(data.SubDivisionalComment ?? "জামানতের টাকা ফেরত প্রদানের নিমিত্ত সুপারিশ সহকারে প্রেরণ করা হইল।").FontSize(11);
+                        });
+
+                        content.Item().PaddingTop(8).AlignRight().Column(signatureCol =>
+                        {
+                            signatureCol.Item().Text("উপ-বিভাগীয় প্রকৌশলী, সড়ক").FontSize(10);
+                            signatureCol.Item().Text("সরঞ্জাম নিয়ন্ত্রণ উপ-বিভাগ, ঢাকা।").FontSize(10);
+                        });
+
+                        // Field 15 - Divisional accountant
+                        content.Item().PaddingTop(15).Row(row =>
+                        {
+                            row.RelativeItem(2).Text("১৫. বিভাগীয় হিসাব রক্ষক").FontSize(11);
+                            row.RelativeItem(3).Text(data.DivisionalAccountantComment ?? "নিরীক্ষিত।").FontSize(11);
+                        });
+
+                        // Final signature section
+                        content.Item().PaddingTop(15).Row(row =>
+                        {
+                            row.RelativeItem(1).AlignLeft().Column(leftSig =>
+                            {
+                                leftSig.Item().Text("বিভাগীয় হিসাব রক্ষক সড়ক,").FontSize(10);
+                                leftSig.Item().Text("সরঞ্জাম নিয়ন্ত্রণ বিভাগ").FontSize(10);
+                                leftSig.Item().Text("সড়ক ভবন, তেজগাঁও, ঢাকা।").FontSize(10);
+                            });
+                            row.RelativeItem(1).AlignRight().Column(rightSig =>
+                            {
+                                rightSig.Item().Text("নির্বাহী প্রকৌশলী, সড়ক").FontSize(10);
+                                rightSig.Item().Text("সরঞ্জাম নিয়ন্ত্রণ বিভাগ").FontSize(10);
+                                rightSig.Item().Text("সড়ক ভবন, তেজগাঁও, ঢাকা।").FontSize(10);
+                            });
+                        });
+                    });
+                });
+            }).GeneratePdf();
+        }
+
 
 
 

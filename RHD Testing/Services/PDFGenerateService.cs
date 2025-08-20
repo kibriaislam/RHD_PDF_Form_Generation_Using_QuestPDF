@@ -17,7 +17,7 @@ namespace RHD_Testing.Services
                     page.Size(new PageSize(356, 216, Unit.Millimetre));
                     page.Margin(6);
 
-                    page.Header().Height(100).Column(column =>
+                    page.Header().Height(90).Column(column =>
                     {
                         // Top header
                         column.Item().Row(row =>
@@ -33,42 +33,42 @@ namespace RHD_Testing.Services
                             .FontSize(12).Bold();
                         column.Item().AlignCenter().Text("(See Rul 206. B. F. R)").FontSize(9);
 
-                        // Instruction paragraph
+                        // Instruction paragraph - Complete text as per reference
                         column.Item().PaddingTop(3).Text(
-                            "(Form contractor and suppliers- To be used when a single payment is made for a job or contract... )")
+                            "(Form contractor and suppliers- To be used when a single payment is made for a job or contract. I. e., only on its completion A single form may be used for making payments to several contractors of suppliers, if they relate to the same work in the same head of account, in the case of suppliers and are billed for at the same time.)")
                             .FontSize(7);
 
-                        // Work details - Split into multiple lines to avoid overflow
-                        column.Item().PaddingTop(3).Column(workColumn =>
+                        // Work details - All in one line as per reference
+                        column.Item().PaddingTop(3).Row(row =>
                         {
-                            workColumn.Item().Text($"Name of work (in the case of bills for work done): {data.WorkName}")
+                            row.RelativeItem(4).Text($"Name of work (in the case of bills for work done): {data.WorkName}")
                                 .FontSize(8);
-                            workColumn.Item().Row(row =>
-                            {
-                                row.RelativeItem().Text($"Cash Book Voucher No. {data.CashBookVoucherNo}")
-                                    .FontSize(8);
-                                row.RelativeItem().AlignRight().Text($"Dated {data.Date:dd/MM/yyyy}")
-                                    .FontSize(8);
-                            });
+                            row.RelativeItem(2).Text($"Cash Book Voucher No. {data.CashBookVoucherNo}")
+                                .FontSize(8);
+                            row.RelativeItem(1).AlignRight().Text($"Dated {data.Date:dd/MM/yyyy}")
+                                .FontSize(8);
                         });
                     });
 
-                    page.Footer().Height(40).Column(column =>
+                    page.Footer().Height(60).Column(column =>
                     {
-                        // Signature section
-                        column.Item().Text("This is a template comment").FontSize(8);
+                        // Signature section with comment positioned between
                         column.Item().Row(row =>
                         {
                             row.RelativeItem().Text("Dated").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("This is a template comment").FontSize(8);
                             row.RelativeItem(3).AlignCenter().Text("Subdivisional Officer, Signature").FontSize(8);
                             row.RelativeItem().AlignRight().Text("Officer preparing the bill").FontSize(8);
                         });
 
-                        // Bottom instructions
-                        column.Item().PaddingTop(2).Text("* In the case of payments to suppliers ...").FontSize(6);
+                        // Add space between signature line and instruction text
+                        column.Item().PaddingTop(8);
+
+                        // Bottom instructions - positioned from middle and increased font size
+                        column.Item().AlignCenter().Text("* In the case of payments to suppliers a red ink entry should made accross the page, above the entries relating thereto. in one of the following forms, applicable to the case :- \r\n(1) \" Stock,\" (2) Purchases -for stock \" (3) Purchases for direct issue to work.........................(4) \" Purchases for the work.................. for issue to contractor .................. \r\nin the case of works the accounts of which are kept by sub-heads the amount relating to all times of work falling under the same \"sub-head\" should to be totalled in red ink \r\nPayment should be attested by some known person when the payee's acknowledgment is given by a mark, seal or thumb Impression.\r\n\r\nThe person actually Making the payment should nitial (and date) in this column against each payment.\r\n** This signature is necessary only when the Officer authorising payment is not the officer who prepares the bill.").FontSize(4);
                     });
 
-                    page.Content().PaddingTop(5).Table(table =>
+                    page.Content().PaddingTop(3).Table(table =>
                     {
                         // Optimized column proportions for landscape
                         table.ColumnsDefinition(columns =>

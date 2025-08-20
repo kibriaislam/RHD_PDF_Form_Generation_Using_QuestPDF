@@ -50,22 +50,51 @@ namespace RHD_Testing.Services
                         });
                     });
 
-                    page.Footer().Height(60).Column(column =>
+                    page.Footer().Height(80).Column(column =>
                     {
                         // Signature section with comment positioned between
                         column.Item().Row(row =>
                         {
                             row.RelativeItem().Text("Dated").FontSize(8);
-                            row.RelativeItem(1).AlignCenter().Text("This is a template comment").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("This is to certify that the supply of goods has been done as per terms & condition of the schedule").FontSize(6);
                             row.RelativeItem(3).AlignCenter().Text("Subdivisional Officer, Signature").FontSize(8);
                             row.RelativeItem().AlignRight().Text("Officer preparing the bill").FontSize(8);
                         });
 
-                        // Add space between signature line and instruction text
+                        // Additional fields row
+                        column.Item().Row(row =>
+                        {
+                            row.RelativeItem().Text("Pay Taka").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("Subdivision, Rank").FontSize(8);
+                            row.RelativeItem(3).AlignCenter().Text("").FontSize(8);
+                            row.RelativeItem().AlignRight().Text("Officer preparising payment").FontSize(8);
+                        });
+
+                        // Third row
+                        column.Item().Row(row =>
+                        {
+                            row.RelativeItem().Text("Dated").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("Dated initials of Divisional Accountant").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("Divisional Officer,").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("Signatural").FontSize(8);
+                            row.RelativeItem().AlignRight().Text("").FontSize(8);
+                        });
+
+                        // Fourth row
+                        column.Item().Row(row =>
+                        {
+                            row.RelativeItem().Text("").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("").FontSize(8);
+                            row.RelativeItem(1).AlignCenter().Text("Division Bank").FontSize(8);
+                            row.RelativeItem().AlignRight().Text("").FontSize(8);
+                        });
+
+                        // Add space between signature lines and instruction text
                         column.Item().PaddingTop(8);
 
-                        // Bottom instructions - positioned from middle and increased font size
-                        column.Item().AlignCenter().Text("* In the case of payments to suppliers a red ink entry should made accross the page, above the entries relating thereto. in one of the following forms, applicable to the case :- \r\n(1) \" Stock,\" (2) Purchases -for stock \" (3) Purchases for direct issue to work.........................(4) \" Purchases for the work.................. for issue to contractor .................. \r\nin the case of works the accounts of which are kept by sub-heads the amount relating to all times of work falling under the same \"sub-head\" should to be totalled in red ink \r\nPayment should be attested by some known person when the payee's acknowledgment is given by a mark, seal or thumb Impression.\r\n\r\nThe person actually Making the payment should nitial (and date) in this column against each payment.\r\n** This signature is necessary only when the Officer authorising payment is not the officer who prepares the bill.").FontSize(4);
+                        // Bottom instructions - positioned from left to right with proper line breaks
+                        column.Item().Text("* In the case of payments to suppliers a red ink entry should made across the page, above the entries relating thereto. in one of the following forms, applicable to the case :- (1)\" Stock,\" (2) Purchases -for stock \" (3) Purchases for direct issue to work......(4) \" Purchases for the work. for issue to contractor. There two columns are not to be filled up in the case ot piece-work agreements.\r\nIn the case of works the accounts of which are kept by sub-heads the amounts relating to all times of work failing under the same \"sub-head\" should to be totaled in red ink Payment should be attested by some known person when the payee's acknowledgement is given by a mark, seal or thumb Impression.\r\nThe person actually Making the payment should nitial (and date) in this column against each payment.\r\n**This signature is necessary only when the Officer authorising payment is not the officer who prepares the bill.").FontSize(4);
                     });
 
                     page.Content().PaddingTop(3).Table(table =>

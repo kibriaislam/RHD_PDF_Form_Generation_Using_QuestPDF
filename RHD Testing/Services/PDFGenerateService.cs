@@ -654,6 +654,9 @@ namespace RHD_Testing.Services
                                         {
                                             detailsColumn.Item().PaddingBottom(5).Text($"{material.Name} - {material.Quantity} nos").FontSize(9);
                                         }
+
+                                        // Add empty space for total row alignment
+                                        detailsColumn.Item().PaddingTop(10).Text("").FontSize(9);
                                     });
 
                                 // Middle: Amount area with prices from database
@@ -664,17 +667,26 @@ namespace RHD_Testing.Services
                                         {
                                             amountColumn.Item().PaddingBottom(5).AlignCenter().Text(material.UnitPrice.ToString()).FontSize(9);
                                         }
+
+                                        // Add Total text at the bottom
+                                        amountColumn.Item().PaddingTop(10).AlignCenter().Text("Total").FontSize(9).Bold();
                                     });
 
                                 // Right side: Amount paid area (quantity * price) from database
                                 mainRow.RelativeItem(1.2f).Border(1).BorderColor(Colors.Black).Height(300)
                                     .Padding(8).Column(paidColumn =>
                                     {
+                                        decimal totalAmount = 0;
+
                                         foreach (var material in materials)
                                         {
-                                            var totalAmount = material.Quantity * material.UnitPrice;
-                                            paidColumn.Item().PaddingBottom(5).AlignCenter().Text(totalAmount.ToString()).FontSize(9);
+                                            var itemTotal = material.Quantity * material.UnitPrice;
+                                            totalAmount += itemTotal;
+                                            paidColumn.Item().PaddingBottom(5).AlignCenter().Text(itemTotal.ToString()).FontSize(9);
                                         }
+
+                                        // Add total value at the bottom
+                                        paidColumn.Item().PaddingTop(10).AlignCenter().Text(totalAmount.ToString()).FontSize(9).Bold();
                                     });
                             });
                         });

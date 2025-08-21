@@ -652,7 +652,7 @@ namespace RHD_Testing.Services
                                     {
                                         foreach (var material in materials)
                                         {
-                                            detailsColumn.Item().PaddingBottom(5).Text($"{material.Name} = {material.Quantity}").FontSize(9);
+                                            detailsColumn.Item().PaddingBottom(5).Text($"{material.Name} - {material.Quantity} nos").FontSize(9);
                                         }
                                     });
 

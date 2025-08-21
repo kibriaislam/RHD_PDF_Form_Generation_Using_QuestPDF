@@ -643,16 +643,16 @@ namespace RHD_Testing.Services
                                     .AlignCenter().Text("Tk.").FontSize(10);
                             });
 
-                            // Main content area with data
+                            // Main content area with data from database
                             tableColumn.Item().Row(mainRow =>
                             {
-                                // Left side: Details area with materials from database
+                                // Left side: Details area with materials and quantity from database
                                 mainRow.RelativeItem(4).Border(1).BorderColor(Colors.Black).Height(300)
                                     .Padding(8).Column(detailsColumn =>
                                     {
                                         foreach (var material in materials)
                                         {
-                                            detailsColumn.Item().PaddingBottom(5).Text(material.Name).FontSize(9);
+                                            detailsColumn.Item().PaddingBottom(5).Text($"{material.Name} = {material.Quantity}").FontSize(9);
                                         }
                                     });
 

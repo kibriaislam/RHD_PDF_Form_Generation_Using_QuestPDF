@@ -15,7 +15,7 @@ namespace RHD_Testing.Services
                 {
                     // Legal size landscape: 14" x 8.5"
                     page.Size(new PageSize(356, 216, Unit.Millimetre));
-                    page.Margin(6);
+                    page.Margin(11);
 
                     page.Header().Height(90).Column(column =>
                     {
@@ -50,8 +50,13 @@ namespace RHD_Testing.Services
                         });
                     });
 
-                    page.Footer().Height(80).Column(column =>
+                    page.Footer().Height(100).Column(column =>
                     {
+                        // Certification text row - positioned in the middle area
+                        column.Item().PaddingTop(2).AlignLeft().Text("This is to certify that the supply of goods has been done as per terms & condition of the schedule").FontSize(6);
+
+                        // Add space before instruction text
+                        column.Item().PaddingTop(4);
                         // First signature row
                         column.Item().Row(row =>
                         {
@@ -88,14 +93,10 @@ namespace RHD_Testing.Services
                             row.RelativeItem(2).Text("").FontSize(8);
                         });
 
-                        // Certification text row - positioned in the middle area
-                        column.Item().PaddingTop(2).AlignCenter().Text("This is to certify that the supply of goods has been done as per terms & condition of the schedule").FontSize(6);
 
-                        // Add space before instruction text
-                        column.Item().PaddingTop(4);
 
                         // Bottom instructions - positioned from left to right with proper line breaks
-                        column.Item().Text("* In the case of payments to suppliers a red ink entry should made across the page, above the entries relating thereto. in one of the following forms, applicable to the case :- (1)\" Stock,\" (2) Purchases -for stock \" (3) Purchases for direct issue to work......(4) \" Purchases for the work. for issue to contractor. There two columns are not to be filled up in the case ot piece-work agreements.\r\nIn the case of works the accounts of which are kept by sub-heads the amounts relating to all times of work failing under the same \"sub-head\" should to be totaled in red ink Payment should be attested by some known person when the payee's acknowledgement is given by a mark, seal or thumb Impression.\r\nThe person actually Making the payment should nitial (and date) in this column against each payment.\r\n**This signature is necessary only when the Officer authorising payment is not the officer who prepares the bill.").FontSize(4);
+                        column.Item().Text("* In the case of payments to suppliers a red ink entry should made across the page, above the entries relating thereto. in one of the following forms, applicable to the case :- (1)\" Stock,\" (2) Purchases -for stock \" (3) Purchases for direct issue to work......(4) \" Purchases for the work. for issue to contractor. There two columns are not to be filled up in the case ot piece-work agreements.\r\nIn the case of works the accounts of which are kept by sub-heads the amounts relating to all times of work failing under the same \"sub-head\" should to be totaled in red ink Payment should be attested by some known person when the payee's acknowledgement is given by a mark, seal or thumb Impression.\r\nThe person actually Making the payment should nitial (and date) in this column against each payment.\r\n**This signature is necessary only when the Officer authorising payment is not the officer who prepares the bill.").FontSize(6);
                     });
 
                     page.Content().PaddingTop(3).Table(table =>

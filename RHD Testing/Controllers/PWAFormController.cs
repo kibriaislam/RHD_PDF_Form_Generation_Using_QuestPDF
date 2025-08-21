@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RHD_Testing.Data;
 using RHD_Testing.Services;
+using static RHD_Testing.Services.PDFGenerateService;
 
 namespace RHD_Testing.Controllers
 {
@@ -199,5 +200,81 @@ namespace RHD_Testing.Controllers
             var pdfBytes = PurchaseAccountPdfGenerator.GeneratePurchaseAccountForm();
             return File(pdfBytes, "application/pdf", "PurchaseAccountForMaterials.pdf");
         }
+        public class PurchaseAccountData1
+        {
+            public string PANumber { get; set; }
+            public string Date { get; set; }
+            public string ContractNumber { get; set; }
+            public string SupplierName { get; set; }
+            public string WorkName { get; set; }
+            public string ReceiptDate { get; set; }
+            public string MBReference { get; set; }
+        }
+
+        // Material class to hold database data
+        public class MaterialItem
+        {
+            public string Name { get; set; }
+            public decimal UnitPrice { get; set; }
+            public int Quantity { get; set; }
+        }
+
+        // Dummy form data for testing
+        private static PurchaseAccountData1 GetDummyFormData()
+        {
+            return new PurchaseAccountData1
+            {
+                PANumber = "PA-2025-001",
+                Date = "21/08/2025",
+                ContractNumber = "CT-AUTO-2025-078",
+                SupplierName = "Bangladesh Auto Parts Ltd., Dhanmondi, Dhaka",
+                WorkName = "Supply of Tires, Rims and Batteries for Government Vehicle Fleet",
+                ReceiptDate = "18/08/2025",
+                MBReference = "MB-2025-Vol-12, Page 45-48"
+            };
+        }
+
+        // Dummy data for testing - Automotive parts (Tires, Rims, Batteries)
+        private static List<MaterialItem> GetDummyMaterials()
+        {
+            return new List<MaterialItem>
+            {
+                new MaterialItem { Name = "Car Tires - 195/65R15 Michelin", UnitPrice = 8500, Quantity = 4 },
+                new MaterialItem { Name = "Truck Tires - 10.00R20 Bridgestone", UnitPrice = 25000, Quantity = 6 },
+                new MaterialItem { Name = "Motorcycle Tires - 90/90-17 MRF", UnitPrice = 3200, Quantity = 8 },
+                new MaterialItem { Name = "Car Battery - 65Ah Exide", UnitPrice = 12000, Quantity = 10 },
+                new MaterialItem { Name = "Truck Battery - 150Ah Hamko", UnitPrice = 18500, Quantity = 5 },
+                new MaterialItem { Name = "Motorcycle Battery - 12V 7Ah", UnitPrice = 2800, Quantity = 12 },
+                new MaterialItem { Name = "Alloy Rims - 15 inch 4-hole", UnitPrice = 6500, Quantity = 8 },
+                new MaterialItem { Name = "Steel Rims - 16 inch 5-hole", UnitPrice = 4200, Quantity = 12 },
+                new MaterialItem { Name = "Motorcycle Rims - 17 inch Spoke", UnitPrice = 3800, Quantity = 6 },
+                new MaterialItem { Name = "SUV Tires - 235/70R16 Yokohama", UnitPrice = 15000, Quantity = 4 },
+                new MaterialItem { Name = "Bus Battery - 200Ah Heavy Duty", UnitPrice = 35000, Quantity = 3 },
+                new MaterialItem { Name = "Truck Rims - 20 inch 10-hole", UnitPrice = 8500, Quantity = 8 },
+                new MaterialItem { Name = "Rickshaw Tires - 4.00-8 Local", UnitPrice = 1200, Quantity = 20 },
+                new MaterialItem { Name = "UPS Battery - 100Ah Deep Cycle", UnitPrice = 15500, Quantity = 6 },
+                new MaterialItem { Name = "Bicycle Tires - 26x1.95 Kenda", UnitPrice = 450, Quantity = 15 }
+            };
+        }
+
+        [HttpGet("generate-pa-account-with-dummy")]
+        public IActionResult GeneratePAAccountWithDummyDataPDF()
+        {
+            try
+            {
+                var materials = GetDummyMaterials();
+                var formData = GetDummyFormData();
+
+                var pdfBytes = GeneratePurchaseAccountForm1(materials, formData);
+
+                return File(pdfBytes, "application/pdf", "PurchaseAccount.pdf");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error generating PDF: {ex.Message}");
+            }
+        }
+
+
     }
 }

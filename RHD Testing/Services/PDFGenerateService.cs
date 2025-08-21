@@ -2,6 +2,7 @@
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using RHD_Testing.Data;
+using static RHD_Testing.Controllers.PWAFormController;
 
 namespace RHD_Testing.Services
 {
@@ -560,9 +561,149 @@ namespace RHD_Testing.Services
             }).GeneratePdf();
         }
 
+        public static byte[] GeneratePurchaseAccountForm1(List<MaterialItem> materials, PurchaseAccountData1 formData)
+        {
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(PageSizes.A4);
+                    page.Margin(40);
 
+                    page.Content().Column(column =>
+                    {
+                        // Header section with P.A.No and Date
+                        column.Item().Row(row =>
+                        {
+                            row.RelativeItem().AlignLeft().Text($"P.A.No. {formData.PANumber}").FontSize(10);
+                            row.RelativeItem().AlignRight().Text($"Date {formData.Date}").FontSize(10);
+                        });
 
+                        column.Item().PaddingTop(20);
 
+                        // Bangladesh Form No.
+                        column.Item().AlignLeft().Text("Bangladesh Form No. 2917").FontSize(10);
+
+                        column.Item().PaddingTop(15);
+
+                        // Contract No section
+                        column.Item().AlignCenter().Text($"Contract No:- {formData.ContractNumber}").FontSize(11).Bold();
+
+                        column.Item().PaddingTop(10);
+
+                        // Main title
+                        column.Item().AlignCenter().Text("PURCHASE ACCOUNT FOR MATARIALS").FontSize(14).Bold();
+
+                        column.Item().PaddingTop(25);
+
+                        // Form fields
+                        column.Item().Column(formColumn =>
+                        {
+                            // Field 1
+                            formColumn.Item().PaddingBottom(8).Text($"1. Name of Supplier: {formData.SupplierName}").FontSize(10);
+
+                            // Field 2  
+                            formColumn.Item().PaddingBottom(8).Text($"2. Name of work for which supplied: {formData.WorkName}").FontSize(10);
+
+                            // Field 3
+                            formColumn.Item().PaddingBottom(8).Text($"3. Date of receipt: {formData.ReceiptDate}").FontSize(10);
+
+                            // Field 4
+                            formColumn.Item().PaddingBottom(8).Text($"4. Reference to M.B. number and page number: {formData.MBReference}").FontSize(10);
+
+                            // Field 5
+                            formColumn.Item().PaddingBottom(15).Text("5. Details of materials:").FontSize(10);
+                        });
+
+                        // Table section
+                        column.Item().Column(tableColumn =>
+                        {
+                            // Headers section
+                            tableColumn.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(4); // Details column
+                                    columns.RelativeColumn(1); // Amount column  
+                                    columns.RelativeColumn(1.2f); // Amount paid column
+                                });
+
+                                // First header row
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(5);
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(5)
+                                    .AlignCenter().Text("Amount").FontSize(10);
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(5)
+                                    .AlignCenter().Text("Amount paid or\nPurchases made\nduring the month").FontSize(9);
+
+                                // Second header row (Tk.)
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(5);
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(5)
+                                    .AlignCenter().Text("Tk.").FontSize(10);
+                                table.Cell().Border(1).BorderColor(Colors.Black).Padding(5)
+                                    .AlignCenter().Text("Tk.").FontSize(10);
+                            });
+
+                            // Main content area with data
+                            tableColumn.Item().Row(mainRow =>
+                            {
+                                // Left side: Details area with materials from database
+                                mainRow.RelativeItem(4).Border(1).BorderColor(Colors.Black).Height(300)
+                                    .Padding(8).Column(detailsColumn =>
+                                    {
+                                        foreach (var material in materials)
+                                        {
+                                            detailsColumn.Item().PaddingBottom(5).Text(material.Name).FontSize(9);
+                                        }
+                                    });
+
+                                // Middle: Amount area with prices from database
+                                mainRow.RelativeItem(1).Border(1).BorderColor(Colors.Black).Height(300)
+                                    .Padding(8).Column(amountColumn =>
+                                    {
+                                        foreach (var material in materials)
+                                        {
+                                            amountColumn.Item().PaddingBottom(5).AlignCenter().Text(material.UnitPrice.ToString()).FontSize(9);
+                                        }
+                                    });
+
+                                // Right side: Amount paid area (quantity * price) from database
+                                mainRow.RelativeItem(1.2f).Border(1).BorderColor(Colors.Black).Height(300)
+                                    .Padding(8).Column(paidColumn =>
+                                    {
+                                        foreach (var material in materials)
+                                        {
+                                            var totalAmount = material.Quantity * material.UnitPrice;
+                                            paidColumn.Item().PaddingBottom(5).AlignCenter().Text(totalAmount.ToString()).FontSize(9);
+                                        }
+                                    });
+                            });
+                        });
+
+                        column.Item().PaddingTop(30);
+
+                        // Bottom signature section
+                        column.Item().Row(row =>
+                        {
+                            // Left side - Divisional Accountant
+                            row.RelativeItem().Column(leftColumn =>
+                            {
+                                leftColumn.Item().PaddingBottom(30).Text(""); // Space for signature
+                                leftColumn.Item().AlignCenter().Text("Divisional Accountant").FontSize(10);
+                                leftColumn.Item().PaddingTop(10).AlignCenter().Text("Date.").FontSize(10);
+                            });
+
+                            // Right side - Sub-Divisional Officer  
+                            row.RelativeItem().Column(rightColumn =>
+                            {
+                                rightColumn.Item().PaddingBottom(30).Text(""); // Space for signature
+                                rightColumn.Item().AlignCenter().Text("Sub-Divisional Officer").FontSize(10);
+                                rightColumn.Item().PaddingTop(10).AlignCenter().Text("Date.").FontSize(10);
+                            });
+                        });
+                    });
+                });
+            }).GeneratePdf();
+        }
 
     }
 }

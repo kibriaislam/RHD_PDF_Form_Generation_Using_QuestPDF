@@ -825,8 +825,8 @@ namespace RHD_Testing.Services
                                 });
                             });
 
-                            // DASHED LINE DIVIDER - reduced width for better space usage
-                            row.ConstantItem(3).Column(dashColumn =>
+                            // DASHED LINE DIVIDER - increased width for more separation
+                            row.ConstantItem(8).Column(dashColumn =>
                             {
                                 dashColumn.Item().Text("").FontSize(1); // Small spacer at top
                                 for (int i = 0; i < 50; i++)
@@ -914,8 +914,8 @@ namespace RHD_Testing.Services
                                 });
                             });
 
-                            // DASHED LINE DIVIDER - reduced width for better space usage
-                            row.ConstantItem(3).Column(dashColumn =>
+                            // DASHED LINE DIVIDER - increased width for more separation
+                            row.ConstantItem(8).Column(dashColumn =>
                             {
                                 dashColumn.Item().Text("").FontSize(1); // Small spacer at top
                                 for (int i = 0; i < 50; i++)

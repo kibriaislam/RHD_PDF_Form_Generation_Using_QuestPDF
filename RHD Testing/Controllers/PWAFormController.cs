@@ -275,6 +275,62 @@ namespace RHD_Testing.Controllers
             }
         }
 
+        [HttpGet("generate-hand-receipt")]
+        public IActionResult GenerateIndentForm(
+               [FromQuery] string? indentNo = null,
+               [FromQuery] DateTime? date = null,
+               [FromQuery] string? issuedBy = null,
+               [FromQuery] string? onIndentNo = null,
+               [FromQuery] DateTime? indentDate = null)
+        {
+            try
+            {
+                // Create data object with query parameters
+                var data = new IndentFormData
+                {
+                    IndentNo = indentNo,
+                    Date = date ?? DateTime.Now,
+                    IssuedBy = issuedBy,
+                    OnIndentNo = onIndentNo,
+                    IndentDate = indentDate ?? DateTime.Now,
+                    Items = new List<IndentItem>
+                {
+                    new IndentItem
+                    {
+                        Description = "Tyres 195/55 R 16\nSuperior Quality, Foreign Made,\nManufactured within 01 (One) year\nfrom delivery date.",
+                        HeadAccount = "",
+                        Quantity = "03(Three) 03(Three)",
+                        WorkName = ""
+                    },
+                    new IndentItem
+                    {
+                        Description = "Tyres 195/55 R 16\nSuperior Quality, Foreign Made,\nManufactured within 01 (One) year\nfrom delivery date.",
+                        HeadAccount = "",
+                        Quantity = "03(Three) 03(Three)",
+                        WorkName = ""
+                    },
+                    new IndentItem
+                    {
+                        Description = "Tyres 195/55 R 16\nSuperior Quality, Foreign Made,\nManufactured within 01 (One) year\nfrom delivery date.",
+                        HeadAccount = "",
+                        Quantity = "03(Three) 03(Three)",
+                        WorkName = ""
+                    }
+                }
+                };
+
+                // Generate the PDF
+                var pdfBytes = HandReceiptPDF(data);
+
+                // Return the PDF file
+                return File(pdfBytes, "application/pdf", $"Form1_Indent_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error generating PDF: {ex.Message}");
+            }
+        }
+
 
     }
 }

@@ -16,9 +16,9 @@ namespace RHD_Testing.Services
                 {
                     // Legal size landscape: 14" x 8.5"
                     page.Size(new PageSize(356, 216, Unit.Millimetre));
-                    page.Margin(11);
+                    page.Margin(14);
 
-                    page.Header().Height(90).Column(column =>
+                    page.Header().Height(100).Column(column =>
                     {
                         // Top header
                         column.Item().Row(row =>
@@ -47,6 +47,16 @@ namespace RHD_Testing.Services
                             row.RelativeItem(2).Text($"Cash Book Voucher No. {data.CashBookVoucherNo}")
                                 .FontSize(8);
                             row.RelativeItem(1).AlignRight().Text($"Dated {data.Date:dd/MM/yyyy}")
+                                .FontSize(8);
+                        });
+
+                        // NEW: P.A No and P.A Date row - maintaining same column alignment
+                        column.Item().PaddingTop(2).Row(row =>
+                        {
+                            row.RelativeItem(4).Text("").FontSize(8); // Empty space to align with work name
+                            row.RelativeItem(2).Text($"P.A No: {data.PANo ?? ""}")
+                                .FontSize(8);
+                            row.RelativeItem(1).AlignRight().Text($"Dated {data.PADate?.ToString("dd/MM/yyyy") ?? ""}")
                                 .FontSize(8);
                         });
                     });
@@ -367,6 +377,7 @@ namespace RHD_Testing.Services
                                 mainRow.RelativeItem(1.2f).Border(1).BorderColor(Colors.Black).Height(300);
                             });
                         });
+                        column.Item().Text("1 lakh Taka Only").AlignRight().FontSize(10);
 
                         column.Item().PaddingTop(30);
 
@@ -714,6 +725,295 @@ namespace RHD_Testing.Services
                         });
                     });
                 });
+            }).GeneratePdf();
+        }
+
+        public static byte[] HandReceiptPDF(IndentFormData data)
+        {
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    // Use legal size landscape for better spacing
+                    page.Size(PageSizes.Legal.Landscape()); // Legal Landscape (14" x 8.5")
+                    // Increase margins for better space utilization
+                    page.Margin(15);
+
+                    page.Content().Column(column =>
+                    {
+                        // Three forms in one row - removed ScaleToFit for better space usage
+                        column.Item().Row(row =>
+                        {
+                            // Form 1 - Left (Counterfoil)
+                            row.RelativeItem().Column(formColumn =>
+                            {
+                                // Header
+                                formColumn.Item().AlignCenter().Text("Form 1. - INDENT FOR STORE").FontSize(12).Bold();
+                                formColumn.Item().AlignCenter().Text("Counterfoil").FontSize(11).Bold();
+                                formColumn.Item().AlignCenter().Text("(See Rul 206. B. F. R)").FontSize(9);
+
+                                // Indent line
+                                formColumn.Item().PaddingTop(8).Row(headerRow =>
+                                {
+                                    headerRow.RelativeItem(1).Text("Indent").FontSize(10);
+                                    headerRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Date line
+                                formColumn.Item().PaddingTop(5).Row(headerRow =>
+                                {
+                                    headerRow.RelativeItem(1).Text("Date").FontSize(10);
+                                    headerRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Table - increased spacing from header
+                                formColumn.Item().PaddingTop(25).Table(table =>
+                                {
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(4);  // Description - wider
+                                        columns.RelativeColumn(2);  // Head account
+                                        columns.RelativeColumn(2);  // No. or Quantity
+                                        columns.RelativeColumn(3);  // Name of work
+                                    });
+
+                                    // Header
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Description").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Head\naccount\netc.").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("No.\nor\nQuantity").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Name of work\n(with name of\ncontractor from\nwhom value is\nrecoverable)").FontSize(9).Bold();
+
+                                    // Data rows
+                                    if (data.Items != null)
+                                    {
+                                        foreach (var item in data.Items)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text(item.Description ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.HeadAccount ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.Quantity ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.WorkName ?? "").FontSize(9);
+                                        }
+
+                                        // Add empty rows to maintain consistent height
+                                        for (int i = data.Items.Count(); i < 5; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Default 5 rows for better spacing
+                                        for (int i = 0; i < 5; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                        }
+                                    }
+                                });
+
+                                // Footer signatures - positioned at bottom with more space
+                                formColumn.Item().PaddingTop(30).AlignBottom().Row(footerRow =>
+                                {
+                                    footerRow.RelativeItem().AlignLeft().Text("Reciver").FontSize(10);
+                                    footerRow.RelativeItem().AlignCenter().Text("SAE (RHD)\nECSD, Dhaka").FontSize(10);
+                                    footerRow.RelativeItem().AlignRight().Text("SDE (RHD)\nECSD, Dhaka").FontSize(10);
+                                });
+                            });
+
+                            // DASHED LINE DIVIDER - reduced width for better space usage
+                            row.ConstantItem(3).Column(dashColumn =>
+                            {
+                                dashColumn.Item().Text("").FontSize(1); // Small spacer at top
+                                for (int i = 0; i < 50; i++)
+                                {
+                                    dashColumn.Item().AlignCenter().Text("-").FontSize(8);
+                                }
+                            });
+
+                            // Form 2 - Middle (Indent)
+                            row.RelativeItem().Column(formColumn =>
+                            {
+                                // Header
+                                formColumn.Item().AlignCenter().Text("Form 1. - INDENT FOR STORE").FontSize(12).Bold();
+                                formColumn.Item().AlignCenter().Text("Counterfoil").FontSize(11).Bold();
+                                formColumn.Item().AlignCenter().Text("Indent").FontSize(11).Bold();
+
+                                // Indent No line
+                                formColumn.Item().PaddingTop(8).Row(headerRow =>
+                                {
+                                    headerRow.RelativeItem(1).Text("Indent No").FontSize(10);
+                                    headerRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Date line
+                                formColumn.Item().PaddingTop(5).Row(headerRow =>
+                                {
+                                    headerRow.RelativeItem(1).Text("Date").FontSize(10);
+                                    headerRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Table (same structure) - increased spacing from header
+                                formColumn.Item().PaddingTop(25).Table(table =>
+                                {
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(4);
+                                        columns.RelativeColumn(2);
+                                        columns.RelativeColumn(2);
+                                        columns.RelativeColumn(3);
+                                    });
+
+                                    // Header
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Description").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Head\naccount\netc.").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("No.\nor\nQuantity").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Name of work\n(with name of\ncontractor from\nwhom value is\nrecoverable)").FontSize(9).Bold();
+
+                                    // Data rows
+                                    if (data.Items != null)
+                                    {
+                                        foreach (var item in data.Items)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text(item.Description ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.HeadAccount ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.Quantity ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.WorkName ?? "").FontSize(9);
+                                        }
+
+                                        for (int i = data.Items.Count(); i < 5; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int i = 0; i < 5; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                        }
+                                    }
+                                });
+
+                                // Footer signatures - positioned at bottom with more space
+                                formColumn.Item().PaddingTop(30).AlignBottom().Row(footerRow =>
+                                {
+                                    footerRow.RelativeItem().AlignLeft().Text("Reciver").FontSize(10);
+                                    footerRow.RelativeItem().AlignCenter().Text("SAE (RHD)\nECSD, Dhaka").FontSize(10);
+                                    footerRow.RelativeItem().AlignRight().Text("SDE (RHD)\nECSD, Dhaka").FontSize(10);
+                                });
+                            });
+
+                            // DASHED LINE DIVIDER - reduced width for better space usage
+                            row.ConstantItem(3).Column(dashColumn =>
+                            {
+                                dashColumn.Item().Text("").FontSize(1); // Small spacer at top
+                                for (int i = 0; i < 50; i++)
+                                {
+                                    dashColumn.Item().AlignCenter().Text("-").FontSize(8);
+                                }
+                            });
+
+                            // Form 3 - Right (Invoice)
+                            row.RelativeItem().Column(formColumn =>
+                            {
+                                // Header
+                                formColumn.Item().AlignCenter().Text("Form 1. - INVOICE").FontSize(12).Bold();
+                                formColumn.Item().AlignCenter().Text("Invoice of Store Supplied").FontSize(11);
+
+                                // By line
+                                formColumn.Item().PaddingTop(8).Row(headerRow =>
+                                {
+                                    headerRow.RelativeItem(1).Text("By").FontSize(10);
+                                    headerRow.RelativeItem(4).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // On indent line
+                                formColumn.Item().PaddingTop(5).Row(headerRow =>
+                                {
+                                    headerRow.RelativeItem(1).Text("On indent No").FontSize(10);
+                                    headerRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                    headerRow.RelativeItem(1).Text("Dated").FontSize(10);
+                                    headerRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Issued by line
+                                formColumn.Item().PaddingTop(5).Row(headerRow =>
+                                {
+                                    headerRow.RelativeItem(1).Text("issued by the").FontSize(10);
+                                    headerRow.RelativeItem(4).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Table (same structure) - increased spacing from header
+                                formColumn.Item().PaddingTop(25).Table(table =>
+                                {
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(4);
+                                        columns.RelativeColumn(2);
+                                        columns.RelativeColumn(2);
+                                        columns.RelativeColumn(3);
+                                    });
+
+                                    // Header
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Description").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Head\naccount\netc.").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("No.\nor\nQuantity").FontSize(9).Bold();
+                                    table.Cell().Border(1).Padding(6).AlignCenter().Text("Name of work\n(with name of\ncontractor from\nwhom value is\nrecoverable)").FontSize(9).Bold();
+
+                                    // Data rows
+                                    if (data.Items != null)
+                                    {
+                                        foreach (var item in data.Items)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text(item.Description ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.HeadAccount ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.Quantity ?? "").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text(item.WorkName ?? "").FontSize(9);
+                                        }
+
+                                        for (int i = data.Items.Count(); i < 5; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (int i = 0; i < 5; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                            table.Cell().Border(1).Padding(6).Text("").FontSize(9);
+                                        }
+                                    }
+                                });
+
+                                // Footer signatures - positioned at bottom with more space
+                                formColumn.Item().PaddingTop(30).AlignBottom().Row(footerRow =>
+                                {
+                                    footerRow.RelativeItem().AlignLeft().Text("Reciver").FontSize(10);
+                                    footerRow.RelativeItem().AlignCenter().Text("SAE (RHD)\nECSD, Dhaka").FontSize(10);
+                                    footerRow.RelativeItem().AlignRight().Text("SDE (RHD)\nECSD, Dhaka").FontSize(10);
+                                });
+                            });
+                        });
+                    });
+                });
+
             }).GeneratePdf();
         }
 

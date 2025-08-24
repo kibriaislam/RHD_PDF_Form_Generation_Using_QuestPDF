@@ -4,6 +4,8 @@
     {
         public string FormNo { get; set; } = "4797";
         public string PRFormNo { get; set; } = "13";
+        public string PANo { get; set; } = "1";
+        public DateTime? PADate { get; set; } = DateTime.Now.Date;
         public string WorkName { get; set; } = "";
         public string CashBookVoucherNo { get; set; } = "";
         public DateTime Date { get; set; } = DateTime.Now;

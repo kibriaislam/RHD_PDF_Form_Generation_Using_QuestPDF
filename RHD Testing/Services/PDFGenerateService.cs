@@ -1017,5 +1017,238 @@ namespace RHD_Testing.Services
             }).GeneratePdf();
         }
 
+
+        public static byte[] IssueTokenPDF(IssueTokenData data)
+        {
+            return Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    // Use legal size landscape for full page utilization
+                    page.Size(PageSizes.Legal.Landscape()); // Legal Landscape (14" x 8.5")
+                    // Proper margins for full page usage
+                    page.Margin(15);
+
+                    page.Content().Column(column =>
+                    {
+                        // Two identical Issue Token forms side by side
+                        column.Item().Row(row =>
+                        {
+                            // Left Issue Token Form
+                            row.RelativeItem().Column(formColumn =>
+                            {
+                                // Header section with Date and H.R. No at top
+                                formColumn.Item().PaddingBottom(10).Row(topRow =>
+                                {
+                                    topRow.RelativeItem().Text("Date").FontSize(12);
+                                    topRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                    topRow.RelativeItem().AlignRight().Text("H.R. No:").FontSize(12);
+                                    topRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Main Title
+                                formColumn.Item().AlignCenter().PaddingBottom(15).Text("Issue Token").FontSize(18).Bold();
+
+                                // Token No
+                                formColumn.Item().PaddingBottom(15).Row(tokenRow =>
+                                {
+                                    tokenRow.RelativeItem().AlignCenter().Text("Token No:").FontSize(14);
+                                    tokenRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Office Type and Vehicle No
+                                formColumn.Item().PaddingBottom(15).Row(officeRow =>
+                                {
+                                    officeRow.RelativeItem().Text("Office Type:").FontSize(12);
+                                    officeRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                    officeRow.RelativeItem().Text("Vehicle No:").FontSize(12);
+                                    officeRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Office Name
+                                formColumn.Item().PaddingBottom(20).Row(nameRow =>
+                                {
+                                    nameRow.RelativeItem().Text("Office Name:").FontSize(12);
+                                    nameRow.RelativeItem(4).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Items Table
+                                formColumn.Item().PaddingBottom(20).Table(table =>
+                                {
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(1);  // Sr.No
+                                        columns.RelativeColumn(2);  // Item
+                                        columns.RelativeColumn(2);  // Size
+                                        columns.RelativeColumn(2);  // Quantity
+                                    });
+
+                                    // Table Header
+                                    table.Cell().Border(1).Padding(8).AlignCenter().Text("Sr.No").FontSize(12).Bold();
+                                    table.Cell().Border(1).Padding(8).AlignCenter().Text("Item").FontSize(12).Bold();
+                                    table.Cell().Border(1).Padding(8).AlignCenter().Text("Size").FontSize(12).Bold();
+                                    table.Cell().Border(1).Padding(8).AlignCenter().Text("Quantity").FontSize(12).Bold();
+
+                                    // Data rows
+                                    if (data.Items != null)
+                                    {
+                                        int srNo = 1;
+                                        foreach (var item in data.Items)
+                                        {
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text(srNo.ToString()).FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text(item.ItemName ?? "").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text(item.Size ?? "").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text(item.Quantity ?? "").FontSize(11);
+                                            srNo++;
+                                        }
+
+                                        // Add empty rows to maintain consistent height (minimum 8 rows for full page usage)
+                                        for (int i = data.Items.Count(); i < 8; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text((i + 1).ToString()).FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Default 8 rows for full page utilization
+                                        for (int i = 1; i <= 8; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text(i.ToString()).FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                        }
+                                    }
+                                });
+
+                                // Bottom section with Date and H.R. No
+                                //formColumn.Item().AlignBottom().PaddingTop(30).Row(bottomRow =>
+                                //{
+                                //    bottomRow.RelativeItem().Text("Date").FontSize(12);
+                                //    bottomRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                //    bottomRow.RelativeItem().AlignRight().Text("H.R. No:").FontSize(12);
+                                //    bottomRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                //});
+                            });
+
+                            // DASHED LINE DIVIDER for separation
+                            row.ConstantItem(10).Column(dashColumn =>
+                            {
+                                dashColumn.Item().Text("").FontSize(1); // Small spacer at top
+                                for (int i = 0; i < 60; i++)
+                                {
+                                    dashColumn.Item().AlignCenter().Text("-").FontSize(8);
+                                }
+                            });
+
+                            // Right Issue Token Form (identical to left)
+                            row.RelativeItem().Column(formColumn =>
+                            {
+                                // Header section with Date and H.R. No at top
+                                formColumn.Item().PaddingBottom(10).Row(topRow =>
+                                {
+                                    topRow.RelativeItem().Text("Date").FontSize(12);
+                                    topRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                    topRow.RelativeItem().AlignRight().Text("H.R. No:").FontSize(12);
+                                    topRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Main Title
+                                formColumn.Item().AlignCenter().PaddingBottom(15).Text("Issue Token").FontSize(18).Bold();
+
+                                // Token No
+                                formColumn.Item().PaddingBottom(15).Row(tokenRow =>
+                                {
+                                    tokenRow.RelativeItem().AlignCenter().Text("Token No:").FontSize(14);
+                                    tokenRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Office Type and Vehicle No
+                                formColumn.Item().PaddingBottom(15).Row(officeRow =>
+                                {
+                                    officeRow.RelativeItem().Text("Office Type:").FontSize(12);
+                                    officeRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                    officeRow.RelativeItem().Text("Vehicle No:").FontSize(12);
+                                    officeRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Office Name
+                                formColumn.Item().PaddingBottom(20).Row(nameRow =>
+                                {
+                                    nameRow.RelativeItem().Text("Office Name:").FontSize(12);
+                                    nameRow.RelativeItem(4).BorderBottom(1).PaddingBottom(3).Text("");
+                                });
+
+                                // Items Table (identical to left)
+                                formColumn.Item().PaddingBottom(20).Table(table =>
+                                {
+                                    table.ColumnsDefinition(columns =>
+                                    {
+                                        columns.RelativeColumn(1);  // Sr.No
+                                        columns.RelativeColumn(2);  // Item
+                                        columns.RelativeColumn(2);  // Size
+                                        columns.RelativeColumn(2);  // Quantity
+                                    });
+
+                                    // Table Header
+                                    table.Cell().Border(1).Padding(8).AlignCenter().Text("Sr.No").FontSize(12).Bold();
+                                    table.Cell().Border(1).Padding(8).AlignCenter().Text("Item").FontSize(12).Bold();
+                                    table.Cell().Border(1).Padding(8).AlignCenter().Text("Size").FontSize(12).Bold();
+                                    table.Cell().Border(1).Padding(8).AlignCenter().Text("Quantity").FontSize(12).Bold();
+
+                                    // Data rows
+                                    if (data.Items != null)
+                                    {
+                                        int srNo = 1;
+                                        foreach (var item in data.Items)
+                                        {
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text(srNo.ToString()).FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text(item.ItemName ?? "").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text(item.Size ?? "").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text(item.Quantity ?? "").FontSize(11);
+                                            srNo++;
+                                        }
+
+                                        // Add empty rows to maintain consistent height
+                                        for (int i = data.Items.Count(); i < 8; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text((i + 1).ToString()).FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Default 8 rows for full page utilization
+                                        for (int i = 1; i <= 8; i++)
+                                        {
+                                            table.Cell().Border(1).Padding(8).AlignCenter().Text(i.ToString()).FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                            table.Cell().Border(1).Padding(8).Text("").FontSize(11);
+                                        }
+                                    }
+                                });
+
+                                // Bottom section with Date and H.R. No
+                                //formColumn.Item().AlignBottom().PaddingTop(30).Row(bottomRow =>
+                                //{
+                                //    bottomRow.RelativeItem().Text("Date").FontSize(12);
+                                //    bottomRow.RelativeItem(3).BorderBottom(1).PaddingBottom(3).Text("");
+                                //    bottomRow.RelativeItem().AlignRight().Text("H.R. No:").FontSize(12);
+                                //    bottomRow.RelativeItem(2).BorderBottom(1).PaddingBottom(3).Text("");
+                                //});
+                            });
+                        });
+                    });
+                });
+
+            }).GeneratePdf();
+        }
+
     }
 }

@@ -183,7 +183,7 @@ namespace RHD_Testing.Controllers
                 };
 
                 // Generate PDF
-                byte[] pdfBytes =PDFGenerateService.GenerateSecurityDepositForm(formData);
+                byte[] pdfBytes = PDFGenerateService.GenerateSecurityDepositForm(formData);
 
                 // Return PDF file
                 return File(pdfBytes, "application/pdf", "Security_Deposit_Return_Form.pdf");
@@ -328,6 +328,52 @@ namespace RHD_Testing.Controllers
             catch (Exception ex)
             {
                 return BadRequest($"Error generating PDF: {ex.Message}");
+            }
+        }
+
+        [HttpGet("token")]
+        public IActionResult GetTokenPDF()
+        {
+            try
+            {
+                var data = new IssueTokenData
+                {
+                    TokenNo = "TK001",
+                    Date = DateTime.Now.ToString("dd/MM/yyyy"),
+                    HRNo = "HR2025001",
+                    OfficeType = "Regional Office",
+                    VehicleNo = "DHK-15-1234",
+                    OfficeName = "Roads and Highways Department, ECSD, Dhaka",
+                    Items = new List<IssueTokenItem>
+                    {
+                        new IssueTokenItem
+                        {
+                            ItemName = "Tyres",
+                            Size = "195/55 R 16",
+                            Quantity = "03(Three)"
+                        },
+                        new IssueTokenItem
+                        {
+                            ItemName = "Tyres",
+                            Size = "195/55 R 16",
+                            Quantity = "03(Three)"
+                        },
+                        new IssueTokenItem
+                        {
+                            ItemName = "Tyres",
+                            Size = "195/55 R 16",
+                            Quantity = "03(Three)"
+                        }
+                    }
+                };
+
+                var pdfBytes = IssueTokenPDF(data);
+                return File(pdfBytes, "application/pdf", $"IssueToken_{data.TokenNo}_{DateTime.Now:yyyyMMdd}.pdf");
+            }
+            catch (Exception ex)
+            {
+               
+                return StatusCode(500, "Error generating PDF");
             }
         }
 
